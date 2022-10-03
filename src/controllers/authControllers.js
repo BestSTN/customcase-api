@@ -16,13 +16,13 @@ exports.register = async (req, res, next) => {
     const { firstName, lastName, username, email, password, confirmPassword } =
       req.body;
 
-    if (!firstName || firstName.trim()) {
+    if (!firstName || !firstName.trim()) {
       throw new AppError("firstName is required", 400);
     }
-    if (!lastName || lastName.trim()) {
+    if (!lastName || !lastName.trim()) {
       throw new AppError("lastName is required", 400);
     }
-    if (!username || username.trim()) {
+    if (!username || !username.trim()) {
       throw new AppError("username is required", 400);
     }
     if (password !== confirmPassword) {
@@ -79,4 +79,8 @@ exports.login = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.getMe = (req, res) => {
+  res.status(200).json({ user: req.user });
 };

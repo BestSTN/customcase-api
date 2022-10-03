@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (db) => {
     User.hasMany(db.Product, {
       foreignKey: {
-        name: "designerId",
+        name: "userId",
         allowNull: false,
       },
       onDelete: "RESTRICT",

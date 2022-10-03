@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
   Product.associate = (db) => {
     Product.belongsTo(db.User, {
       foreignKey: {
-        name: "designerId",
+        name: "userId",
         allowNull: false,
       },
       onDelete: "RESTRICT",
