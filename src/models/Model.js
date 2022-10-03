@@ -9,7 +9,14 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
-      image: {
+      imageLower: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      imageUpper: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {

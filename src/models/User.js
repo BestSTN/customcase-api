@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.hasMany(db.Order, {
       foreignKey: {
-        name: "customerId",
+        name: "userId",
         allowNull: false,
       },
       onDelete: "RESTRICT",
