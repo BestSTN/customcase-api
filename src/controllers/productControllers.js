@@ -27,7 +27,7 @@ exports.createProduct = async (req, res, next) => {
       throw new AppError("image or thumbnail is invalid", 400);
     }
 
-    if (!validator.isNumeric(price)) {
+    if (!validator.isNumeric(price + "")) {
       throw new AppError("price must be number", 400);
     }
 
