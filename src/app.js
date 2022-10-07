@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const authRoute = require("./routes/authRoute");
 const productRoute = require("./routes/productRoute");
 const orderRoute = require("./routes/orderRoute");
+const userRoute = require("./routes/userRoute");
 const error = require("./middlewares/error");
 const notFound = require("./middlewares/notFound");
 const authenticate = require("./middlewares/authenticate");
@@ -24,6 +25,7 @@ app.use("public/images", express.static("public/images"));
 app.use("/auth", authRoute);
 app.use("/products", productRoute);
 app.use("/orders", authenticate, orderRoute);
+app.use("/users", userRoute);
 
 app.use(error);
 app.use(notFound);
