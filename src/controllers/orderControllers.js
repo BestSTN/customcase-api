@@ -1,6 +1,13 @@
 const validator = require("validator");
 
-const { User, Order, OrderItem, sequelize } = require("../models");
+const {
+  User,
+  Order,
+  OrderItem,
+  Product,
+  Model,
+  sequelize,
+} = require("../models");
 const AppError = require("../utils/appError");
 
 exports.getAllOrder = async (req, res, next) => {
@@ -12,7 +19,17 @@ exports.getAllOrder = async (req, res, next) => {
       throw new AppError("no permission", 403);
     }
 
-    const orders = await Order.findAll({ include: OrderItem });
+    const orders = await Order.findAll({
+      include: {
+        model: OrderItem,
+        include: {
+          model: Product,
+          paranoid: false,
+          include: { model: Model, attributes: ["name"] },
+        },
+      },
+      order: [["createdAt", "DESC"]],
+    });
     res.status(200).json({ orders });
   } catch (err) {
     next(err);
@@ -83,7 +100,17 @@ exports.updateOrderTransaction = async (req, res, next) => {
       throw new AppError("no permission", 403);
     }
 
-    const exitOrder = await Order.findOne({ where: { id } });
+    const exitOrder = await Order.findOne({
+      where: { id },
+      include: {
+        model: OrderItem,
+        include: {
+          model: Product,
+          paranoid: false,
+          include: { model: Model, attributes: ["name"] },
+        },
+      },
+    });
     if (!exitOrder) {
       throw new AppError("order not found", 400);
     }

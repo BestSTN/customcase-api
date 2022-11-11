@@ -25,6 +25,9 @@ exports.register = async (req, res, next) => {
     if (!username || !username.trim()) {
       throw new AppError("username is required", 400);
     }
+    if (!password || !password.trim()) {
+      throw new AppError("password is required", 400);
+    }
     if (password !== confirmPassword) {
       throw new AppError("password and confirm password did not match", 400);
     }
@@ -67,11 +70,17 @@ exports.login = async (req, res, next) => {
       },
     });
     if (!user) {
-      throw new AppError("email address or mobile or password is invalid", 400);
+      throw new AppError(
+        "usernaem or email address or password is invalid",
+        400
+      );
     }
     const isCorrectPassword = await bcrypt.compare(password, user.password);
     if (!isCorrectPassword) {
-      throw new AppError("email address or mobile or password is invalid", 400);
+      throw new AppError(
+        "username or email address or password is invalid",
+        400
+      );
     }
 
     const token = genToken({ id: user.id });

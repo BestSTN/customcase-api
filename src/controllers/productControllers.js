@@ -1,11 +1,18 @@
 const fs = require("fs");
-const { Product } = require("../models");
+const { Product, User, Model } = require("../models");
 const validator = require("validator");
 const AppError = require("../utils/appError");
 
 exports.getAllProduct = async (req, res, next) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      attributes: { exclude: ["userId", "modelId"] },
+      include: [
+        { model: User, attributes: { exclude: "password" } },
+        { model: Model },
+      ],
+      order: [["updatedAt", "DESC"]],
+    });
     res.status(200).json({ products });
   } catch (err) {
     next(err);
@@ -31,7 +38,7 @@ exports.createProduct = async (req, res, next) => {
       throw new AppError("price must be number", 400);
     }
 
-    const product = await Product.create({
+    const newProduct = await Product.create({
       name,
       image,
       thumbnail,
@@ -39,6 +46,14 @@ exports.createProduct = async (req, res, next) => {
       price,
       modelId,
       userId: req.user.id,
+    });
+    const product = await Product.findOne({
+      where: { id: newProduct.id },
+      attributes: { exclude: ["userId", "modelId"] },
+      include: [
+        { model: User, attributes: { exclude: "password" } },
+        { model: Model },
+      ],
     });
 
     res.status(200).json({ product });
@@ -63,18 +78,18 @@ exports.updateProduct = async (req, res, next) => {
       throw new AppError("no permission to update", 403);
     }
 
-    if (req.files.image) {
-      updateValue.image = req.files.image[0].path;
-      if (product.image) {
-        fs.unlinkSync(product.image);
-      }
-    }
-    if (req.files.thumbnail) {
-      updateValue.thumbnail = req.files.thumbnail[0].path;
-      if (product.thumbnail) {
-        fs.unlinkSync(product.thumbnail);
-      }
-    }
+    // if (req.files.image) {
+    //   updateValue.image = req.files.image[0].path;
+    //   if (product.image) {
+    //     fs.unlinkSync(product.image);
+    //   }
+    // }
+    // if (req.files.thumbnail) {
+    //   updateValue.thumbnail = req.files.thumbnail[0].path;
+    //   if (product.thumbnail) {
+    //     fs.unlinkSync(product.thumbnail);
+    //   }
+    // }
 
     await Product.update(updateValue, { where: { id } });
     res

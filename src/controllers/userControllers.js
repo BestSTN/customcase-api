@@ -1,16 +1,29 @@
 const fs = require("fs");
 const validator = require("validator");
 
-const { Product, Order, OrderItem, User } = require("../models");
+const { Product, Order, OrderItem, User, Model } = require("../models");
 const AppError = require("../utils/appError");
 
 exports.getUserProduct = async (req, res, next) => {
   try {
-    const products = await Product.findAll({
-      where: { userId: req.params.id },
+    const id = +req.params.id;
+    const user = await User.findOne({
+      where: { id },
+      attributes: { exclude: "password" },
+      include: {
+        model: Product,
+        include: [
+          { model: User, attributes: { exclude: "password" } },
+          { model: Model },
+        ],
+      },
     });
 
-    res.status(200).json({ products });
+    if (!user) {
+      throw new AppError("user not found", 400);
+    }
+
+    res.status(200).json({ user });
   } catch (err) {
     next(err);
   }
@@ -20,7 +33,15 @@ exports.getUserOrder = async (req, res, next) => {
   try {
     const orders = await Order.findAll({
       where: { userId: req.user.id },
-      include: OrderItem,
+      include: {
+        model: OrderItem,
+        include: {
+          model: Product,
+          paranoid: false,
+          include: { model: Model, attributes: ["name"] },
+        },
+      },
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).json({ orders });
   } catch (err) {
@@ -31,7 +52,17 @@ exports.getUserOrder = async (req, res, next) => {
 exports.updateOrderDelivery = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const exitOrder = await Order.findOne({ where: { id } });
+    const exitOrder = await Order.findOne({
+      where: { id },
+      include: {
+        model: OrderItem,
+        include: {
+          model: Product,
+          paranoid: false,
+          include: { model: Model, attributes: ["name"] },
+        },
+      },
+    });
     if (!exitOrder) {
       throw new AppError("order not found", 400);
     }

@@ -19,10 +19,10 @@ router.post(
 router.patch(
   "/:id",
   authenticate,
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "thumbnail", maxCount: 1 },
-  ]),
+  // upload.fields([
+  //   { name: "image", maxCount: 1 },
+  //   { name: "thumbnail", maxCount: 1 },
+  // ]),
   productController.updateProduct
 );
 router.delete("/:id", authenticate, productController.deleteProduct);

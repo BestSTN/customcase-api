@@ -6,8 +6,8 @@ const userController = require("../controllers/userControllers");
 
 const router = express.Router();
 
-router.get("/:id/products", userController.getUserProduct);
 router.get("/orders", authenticate, userController.getUserOrder);
+router.get("/:id", userController.getUserProduct);
 router.patch("/orders/:id", authenticate, userController.updateOrderDelivery);
 router.patch(
   "/",
